@@ -17,7 +17,11 @@ import {
   TextField,
   Text,
   useIndexResourceState,
+  Thumbnail,
 } from '@shopify/polaris';
+import {createFalse} from 'typescript';
+
+import {focusLastKeyboardFocusableNode} from '../../utilities/focus';
 
 import {IndexTable} from './IndexTable';
 
@@ -3996,6 +4000,1349 @@ export function WithSubHeaders() {
         resourceName={resourceName}
         itemCount={rows.length}
         headings={columnHeadings as IndexTableProps['headings']}
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRows() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell scope="col" id={subheaderId}>
+            <Text as="span" fontWeight="semibold">
+              {orderDate}
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {id, name, location, orders, amountSpent, position, disabled},
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Text variant="bodyMd" as="span">
+                    {name}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRowsNonSelectable() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell scope="col" id={subheaderId}>
+            <Text as="span" fontWeight="semibold">
+              {orderDate}
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {id, name, location, orders, amountSpent, position, disabled},
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Text variant="bodyMd" as="span">
+                    {name}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+        selectable={false}
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRowsWithThumbnails() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      image: '',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      image: '',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Image', id: 'column-header--image'},
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell>
+            <Thumbnail
+              source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+              size="medium"
+              alt="Black choker necklace"
+            />
+          </IndexTable.Cell>
+          <IndexTable.Cell>
+            <Text as="span" fontWeight="semibold">
+              {orderDate}
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {
+              id,
+              image,
+              name,
+              location,
+              orders,
+              amountSpent,
+              position,
+              disabled,
+            },
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Thumbnail
+                    source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                    size="small"
+                    alt="Black choker necklace"
+                  />
+                </IndexTable.Cell>
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Text variant="bodyMd" as="span">
+                    {name}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+        selectable
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRowsWithThumbnailsNonSelectable() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      image: '',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      image: '',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Image', id: 'column-header--image'},
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell>
+            <Thumbnail
+              source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+              size="medium"
+              alt="Black choker necklace"
+            />
+          </IndexTable.Cell>
+          <IndexTable.Cell>
+            <Text as="span" fontWeight="semibold">
+              {orderDate}
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {
+              id,
+              image,
+              name,
+              location,
+              orders,
+              amountSpent,
+              position,
+              disabled,
+            },
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Thumbnail
+                    source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                    size="small"
+                    alt="Black choker necklace"
+                  />
+                </IndexTable.Cell>
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <Text variant="bodyMd" as="span">
+                    {name}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+        selectable={false}
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRowsWithThumbnailsOneCell() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      image: '',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      image: '',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell>
+            <HorizontalStack gap="4">
+              <Thumbnail
+                source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                size="medium"
+                alt="Black choker necklace"
+              />
+              <Text as="span" fontWeight="semibold">
+                {orderDate}
+              </Text>
+            </HorizontalStack>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {
+              id,
+              image,
+              name,
+              location,
+              orders,
+              amountSpent,
+              position,
+              disabled,
+            },
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <HorizontalStack gap="4">
+                    <Thumbnail
+                      source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                      size="small"
+                      alt="Black choker necklace"
+                    />
+                    <Text variant="bodyMd" as="span">
+                      {name}
+                    </Text>
+                  </HorizontalStack>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+        selectable
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
+  );
+}
+
+export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
+  const rows = [
+    {
+      id: '3411',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 11,
+      amountSpent: '$2,400',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2562',
+      url: '#',
+      image: '',
+      name: 'Medium',
+      orders: 30,
+      amountSpent: '$975',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '4102',
+      url: '#',
+      image: '',
+      name: 'Large',
+      orders: 27,
+      amountSpent: '$2885',
+      lastOrderDate: 'Orange',
+    },
+    {
+      id: '2564',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 19,
+      amountSpent: '$1,209',
+      lastOrderDate: 'Red',
+      disabled: true,
+    },
+    {
+      id: '2563',
+      url: '#',
+      image: '',
+      name: 'Small',
+      orders: 22,
+      amountSpent: '$1,400',
+      lastOrderDate: 'Green',
+    },
+  ];
+
+  const columnHeadings = [
+    {title: 'Name', id: 'column-header--name'},
+    {
+      alignment: 'end',
+      hidden: false,
+      id: 'column-header--amount-spent',
+      title: 'Price',
+    },
+    {
+      alignment: 'end',
+      id: 'column-header--order-count',
+      title: 'Available',
+    },
+  ];
+
+  const groupRowsBy = (groupKey: string, resolveId: (groupVal) => string) => {
+    let position = -1;
+    const groups = rows.reduce((groups, customer) => {
+      const groupVal = customer[groupKey];
+      if (!groups[groupVal]) {
+        position += 1;
+
+        groups[groupVal] = {
+          position,
+          customers: [],
+          id: resolveId(groupVal),
+        };
+      }
+
+      groups[groupVal].customers.push({
+        ...customer,
+        position: position + 1,
+      });
+
+      position += 1;
+      return groups;
+    }, {});
+
+    return groups;
+  };
+
+  const resourceName = {
+    singular: 'customer',
+    plural: 'customers',
+  };
+
+  const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    useIndexResourceState(rows, {resourceFilter: ({disabled}) => !disabled});
+
+  const orders = groupRowsBy(
+    'lastOrderDate',
+    (date) => `last-order-date--${date.replace(',', '').split(' ').join('-')}`,
+  );
+
+  const rowMarkup = Object.keys(orders).map((orderDate, index) => {
+    const {customers, position, id: subheaderId} = orders[orderDate];
+    let selected: IndexTableRowProps['selected'] = false;
+
+    const someCustomersSelected = customers.some(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    const allCustomersSelected = customers.every(({id}) =>
+      selectedResources.includes(id),
+    );
+
+    if (allCustomersSelected) {
+      selected = true;
+    } else if (someCustomersSelected) {
+      selected = 'indeterminate';
+    }
+
+    const selectableRows = rows.filter(({disabled}) => !disabled);
+    const rowRange: IndexTableRowProps['subHeaderRange'] = [
+      selectableRows.findIndex((row) => row.id === customers[0].id),
+      selectableRows.findIndex(
+        (row) => row.id === customers[customers.length - 1].id,
+      ),
+    ];
+
+    const disabled = customers.every(({disabled}) => disabled);
+
+    return (
+      <Fragment key={subheaderId}>
+        <IndexTable.Row
+          rowType="parent"
+          selectionRange={rowRange}
+          id={`Subheader-${index}`}
+          position={position}
+          selected={selected}
+          disabled={disabled}
+          accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
+        >
+          <IndexTable.Cell>
+            <HorizontalStack gap="4">
+              <Thumbnail
+                source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                size="medium"
+                alt="Black choker necklace"
+              />
+              <Text as="span" fontWeight="semibold">
+                {orderDate}
+              </Text>
+            </HorizontalStack>
+          </IndexTable.Cell>
+          <IndexTable.Cell />
+          <IndexTable.Cell />
+        </IndexTable.Row>
+        {customers.map(
+          (
+            {
+              id,
+              image,
+              name,
+              location,
+              orders,
+              amountSpent,
+              position,
+              disabled,
+            },
+            rowIndex,
+          ) => {
+            return (
+              <IndexTable.Row
+                rowType="child"
+                key={rowIndex}
+                id={id}
+                position={position}
+                selected={selectedResources.includes(id)}
+                disabled={disabled}
+              >
+                <IndexTable.Cell
+                  scope="row"
+                  headers={`${columnHeadings[0].id} ${subheaderId}`}
+                >
+                  <HorizontalStack gap="4">
+                    <Thumbnail
+                      source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                      size="small"
+                      alt="Black choker necklace"
+                    />
+                    <Text variant="bodyMd" as="span">
+                      {name}
+                    </Text>
+                  </HorizontalStack>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {amountSpent}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text as="span" alignment="end" numeric>
+                    {orders}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            );
+          },
+        )}
+      </Fragment>
+    );
+  });
+
+  return (
+    <LegacyCard>
+      <IndexTable
+        onSelectionChange={handleSelectionChange}
+        selectedItemsCount={
+          allResourcesSelected ? 'All' : selectedResources.length
+        }
+        resourceName={resourceName}
+        itemCount={rows.length}
+        headings={columnHeadings as IndexTableProps['headings']}
+        selectable={false}
       >
         {rowMarkup}
       </IndexTable>
