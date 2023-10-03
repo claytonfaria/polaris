@@ -52,6 +52,8 @@ type InputMode =
   | 'email'
   | 'url';
 
+type Tone = 'magic';
+
 interface SelectSuggestion {
   suggestion?: string;
 }
@@ -178,6 +180,8 @@ interface NonMutuallyExclusiveProps {
    * Disables the 1password extension on the text field.
    */
   disable1Password?: boolean;
+  /** Indicates the tone of the text field */
+  tone?: Tone;
 }
 
 export type MutuallyExclusiveSelectionProps =
@@ -245,6 +249,7 @@ export function TextField({
   onBlur,
   borderless,
   disable1Password,
+  tone,
 }: TextFieldProps) {
   const i18n = useI18n();
   const [height, setHeight] = useState<number | null>(null);
@@ -294,6 +299,7 @@ export function TextField({
     disabled && styles.disabled,
     readOnly && styles.readOnly,
     error && styles.error,
+    tone && tone === 'magic' && styles.magic,
     multiline && styles.multiline,
     focus && !disabled && styles.focus,
     borderless && styles.borderless,

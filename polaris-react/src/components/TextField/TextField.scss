@@ -151,6 +151,79 @@ $spinner-icon-size: 12px;
   }
 }
 
+.magic {
+  > .Input {
+    #{$se23} & {
+      color: var(--p-color-text-magic);
+    }
+  }
+
+  > .Backdrop {
+    #{$se23} & {
+      // se23 -- specificity bump
+      background-color: var(--p-color-bg-surface-magic);
+      border-color: var(--p-color-border-magic-secondary);
+    }
+  }
+
+  // stylelint-disable-next-line selector-max-specificity -- set Backdrop styles
+  &:not(.disabled):not(.error):not(.readOnly)
+    > .Input:hover:not(:focus-visible) {
+    #{$se23} & {
+      // stylelint-disable-next-line -- se23
+      ~ .Backdrop {
+        background-color: var(--p-color-bg-surface-magic-hover);
+        border-color: var(--p-color-border-magic-secondary);
+      }
+    }
+  }
+
+  > .Input:active,
+  > .Input:focus-visible {
+    #{$se23} & {
+      // stylelint-disable-next-line -- se23
+      ~ .Backdrop {
+        background-color: var(--p-color-bg-surface-magic-active);
+        border-color: var(--p-color-border-magic-secondary);
+      }
+    }
+  }
+}
+
+.magic {
+  > .Input {
+    color: var(--p-color-text-magic);
+  }
+
+  > .Backdrop {
+    background-color: var(--p-color-bg-surface-magic);
+    border-color: var(--p-color-border-magic-secondary);
+  }
+
+  // stylelint-disable-next-line selector-max-specificity -- set Backdrop styles
+  &:not(.disabled):not(.error):not(.readOnly)
+    > .Input:hover:not(:focus-visible) {
+    // stylelint-disable-next-line -- set Backdrop styles
+    ~ .Backdrop {
+      background-color: var(--p-color-bg-surface-magic-hover);
+      border-color: var(--p-color-border-magic-secondary);
+    }
+  }
+
+  // stylelint-disable-next-line selector-max-specificity -- set Backdrop styles
+  &:not(.disabled):not(.error):not(.readOnly) {
+    // stylelint-disable-next-line -- set Backdrop styles
+    > .Input:active ~ .Backdrop,
+    > .Input:focus-visible {
+      // stylelint-disable-next-line -- set Backdrop styles
+      ~ .Backdrop {
+        background-color: var(--p-color-bg-surface-magic-active);
+        border-color: var(--p-color-border-magic-secondary);
+      }
+    }
+  }
+}
+
 .disabled {
   color: var(--p-color-text-disabled);
   cursor: initial;
