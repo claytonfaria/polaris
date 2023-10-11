@@ -226,19 +226,19 @@ $loading-panel-height: 53px;
       var(--pc-index-table-checkbox-offset-left) +
         var(--pc-index-table-checkbox-width)
     );
+    --pc-index-table-shifted-checkbox: 32;
 
     .TableCell-first {
       left: var(--pc-index-table-checkbox-child-offset);
-
+      z-index: var(--pc-index-table-shifted-checkbox);
       @media #{$p-breakpoints-sm-down} {
         left: var(--p-space-2);
       }
     }
-    .TableCell-first + .TableCell {
+    .TableCell-first + .TableCell > * {
       //leads to overlaping cells
-      left: calc(
-        var(--pc-checkbox-offset) + var(--pc-index-table-checkbox-child-offset)
-      );
+
+      left: var(--pc-index-table-checkbox-child-offset);
       @media #{$p-breakpoints-sm-down} {
         position: sticky;
         left: calc(
