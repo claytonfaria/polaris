@@ -18,6 +18,7 @@ import {
   Text,
   useIndexResourceState,
   Thumbnail,
+  Box,
 } from '@shopify/polaris';
 import {createFalse} from 'typescript';
 
@@ -5071,16 +5072,18 @@ export function WithNestedRowsWithThumbnailsOneCellSelectable() {
                   scope="row"
                   headers={`${columnHeadings[0].id} ${subheaderId}`}
                 >
-                  <InlineStack gap="400" blockAlign="center">
-                    <Thumbnail
-                      source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
-                      size="small"
-                      alt="Black choker necklace"
-                    />
-                    <Text variant="bodyMd" as="span">
-                      {name}
-                    </Text>
-                  </InlineStack>
+                  <Box paddingInlineStart="800">
+                    <InlineStack gap="400" blockAlign="center">
+                      <Thumbnail
+                        source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
+                        size="small"
+                        alt="Black choker necklace"
+                      />
+                      <Text variant="bodyMd" as="span">
+                        {name}
+                      </Text>
+                    </InlineStack>
+                  </Box>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Text as="span" alignment="end" numeric>
