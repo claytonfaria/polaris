@@ -107,6 +107,12 @@ $spinner-icon-size: 12px;
   }
 }
 
+.aiGenerated {
+  > .Input {
+    color: var(--p-color-text-magic);
+  }
+}
+
 // stylelint-disable -- specificity bump for readOnly styles to override
 .readOnly.readOnly {
   > .Input {
@@ -126,6 +132,40 @@ $spinner-icon-size: 12px;
   }
 }
 // stylelint-enable
+
+.magic {
+  > .Input {
+    color: var(--p-color-text-magic);
+  }
+
+  > .Backdrop {
+    background-color: var(--p-color-bg-surface-magic);
+    border-color: var(--p-color-border-magic-secondary);
+  }
+
+  // stylelint-disable-next-line selector-max-specificity -- set Backdrop styles
+  &:not(.disabled):not(.error):not(.readOnly)
+    > .Input:hover:not(:focus-visible) {
+    // stylelint-disable-next-line -- set Backdrop styles
+    ~ .Backdrop {
+      background-color: var(--p-color-bg-surface-magic-hover);
+      border-color: var(--p-color-border-magic-secondary);
+    }
+  }
+
+  // stylelint-disable-next-line selector-max-specificity -- set Backdrop styles
+  &:not(.disabled):not(.error):not(.readOnly) {
+    // stylelint-disable-next-line -- set Backdrop styles
+    > .Input:active ~ .Backdrop,
+    > .Input:focus-visible {
+      // stylelint-disable-next-line -- set Backdrop styles
+      ~ .Backdrop {
+        background-color: var(--p-color-bg-surface-magic-active);
+        border-color: var(--p-color-border-magic-secondary);
+      }
+    }
+  }
+}
 
 .disabled {
   color: var(--p-color-text-disabled);
