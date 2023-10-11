@@ -7,7 +7,7 @@ import type {
 } from '@shopify/polaris';
 import {
   Icon,
-  HorizontalStack,
+  InlineStack,
   Button,
   LegacyCard,
   EmptySearchResult,
@@ -4137,7 +4137,7 @@ export function WithNestedRows() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -4340,7 +4340,7 @@ export function WithNestedRowsNonSelectable() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -4550,7 +4550,7 @@ export function WithNestedRowsWithThumbnails() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -4786,7 +4786,7 @@ export function WithNestedRowsWithThumbnailsNonSelectable() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -4886,7 +4886,7 @@ export function WithNestedRowsWithThumbnailsNonSelectable() {
   );
 }
 
-export function WithNestedRowsWithThumbnailsOneCell() {
+export function WithNestedRowsWithThumbnailsOneCellSelectable() {
   const rows = [
     {
       id: '3411',
@@ -5021,7 +5021,7 @@ export function WithNestedRowsWithThumbnailsOneCell() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -5030,7 +5030,7 @@ export function WithNestedRowsWithThumbnailsOneCell() {
           accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
         >
           <IndexTable.Cell>
-            <HorizontalStack gap="4">
+            <InlineStack gap="400" blockAlign="center">
               <Thumbnail
                 source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
                 size="medium"
@@ -5039,7 +5039,7 @@ export function WithNestedRowsWithThumbnailsOneCell() {
               <Text as="span" fontWeight="semibold">
                 {orderDate}
               </Text>
-            </HorizontalStack>
+            </InlineStack>
           </IndexTable.Cell>
           <IndexTable.Cell />
           <IndexTable.Cell />
@@ -5071,7 +5071,7 @@ export function WithNestedRowsWithThumbnailsOneCell() {
                   scope="row"
                   headers={`${columnHeadings[0].id} ${subheaderId}`}
                 >
-                  <HorizontalStack gap="4">
+                  <InlineStack gap="400" blockAlign="center">
                     <Thumbnail
                       source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
                       size="small"
@@ -5080,7 +5080,7 @@ export function WithNestedRowsWithThumbnailsOneCell() {
                     <Text variant="bodyMd" as="span">
                       {name}
                     </Text>
-                  </HorizontalStack>
+                  </InlineStack>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Text as="span" alignment="end" numeric>
@@ -5253,7 +5253,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
     return (
       <Fragment key={subheaderId}>
         <IndexTable.Row
-          rowType="parent"
+          rowType="subheader"
           selectionRange={rowRange}
           id={`Subheader-${index}`}
           position={position}
@@ -5262,7 +5262,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
           accessibilityLabel={`Select all customers whose last order was placed on ${orderDate}`}
         >
           <IndexTable.Cell>
-            <HorizontalStack gap="4">
+            <InlineStack gap="400" blockAlign="center">
               <Thumbnail
                 source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
                 size="medium"
@@ -5271,7 +5271,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
               <Text as="span" fontWeight="semibold">
                 {orderDate}
               </Text>
-            </HorizontalStack>
+            </InlineStack>
           </IndexTable.Cell>
           <IndexTable.Cell />
           <IndexTable.Cell />
@@ -5303,7 +5303,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
                   scope="row"
                   headers={`${columnHeadings[0].id} ${subheaderId}`}
                 >
-                  <HorizontalStack gap="4">
+                  <InlineStack gap="400" blockAlign="center">
                     <Thumbnail
                       source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
                       size="small"
@@ -5312,7 +5312,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
                     <Text variant="bodyMd" as="span">
                       {name}
                     </Text>
-                  </HorizontalStack>
+                  </InlineStack>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Text as="span" alignment="end" numeric>
