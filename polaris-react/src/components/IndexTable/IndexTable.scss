@@ -232,18 +232,15 @@ $loading-panel-height: 53px;
       left: var(--pc-index-table-checkbox-child-offset);
       z-index: var(--pc-index-table-shifted-checkbox);
       @media #{$p-breakpoints-sm-down} {
-        left: var(--p-space-2);
+        left: calc(var(--pc-index-table-checkbox-child-offset));
       }
     }
-    .TableCell-first + .TableCell > * {
-      //leads to overlaping cells
-
+    .TableCell-first + .TableCell > span {
+      position: relative;
       left: var(--pc-index-table-checkbox-child-offset);
       @media #{$p-breakpoints-sm-down} {
-        position: sticky;
-        left: calc(
-          var(--p-space-6) + var(--pc-index-table-checkbox-child-offset)
-        );
+        position: relative;
+        left: var(--pc-index-table-checkbox-child-offset);
       }
     }
   }
@@ -823,12 +820,19 @@ $loading-panel-height: 53px;
     position: sticky;
   }
 
-  &.Table-sticky .TableRow-child .TableCell:first-child {
-    width: auto;
-    // left: var(--p-space-500);
+  &.Table-sticky .TableRow-child .TableCell:first-child > span {
+    --pc-index-table-checkbox-width: var(--p-space-500);
+    --pc-index-table-checkbox-offset-left: var(--p-space-300);
+    --pc-index-table-checkbox-border-width: var(--p-border-width-0165);
+    --pc-index-table-checkbox-child-offset: calc(
+      var(--pc-index-table-checkbox-offset-left) +
+        var(--pc-index-table-checkbox-width)
+    );
+    position: relative;
+    left: var(--pc-index-table-checkbox-child-offset);
     @media #{$p-breakpoints-sm-down} {
-      position: sticky;
-      left: var(--p-space-500);
+      position: relative;
+      left: var(--pc-index-table-checkbox-child-offset);
     }
   }
 
