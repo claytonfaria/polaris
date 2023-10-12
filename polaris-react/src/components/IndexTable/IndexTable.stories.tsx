@@ -6,9 +6,7 @@ import type {
   IndexTableRowProps,
 } from '@shopify/polaris';
 import {
-  Icon,
   InlineStack,
-  Button,
   LegacyCard,
   EmptySearchResult,
   IndexFilters,
@@ -20,9 +18,6 @@ import {
   Thumbnail,
   Box,
 } from '@shopify/polaris';
-import {createFalse} from 'typescript';
-
-import {focusLastKeyboardFocusableNode} from '../../utilities/focus';
 
 import {IndexTable} from './IndexTable';
 

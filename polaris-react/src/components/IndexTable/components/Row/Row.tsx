@@ -32,7 +32,7 @@ export interface RowProps {
   /** A tuple array with the first and last index of the range of other rows that this row describes. All rows in the range are selected when the selection range row is selected. */
   selectionRange?: Range;
   /**
-   * Indicates the relationship or role of the row's contents. A "subheader" row displays the same as the table header. A "child" row represents the nested structure.
+   * Indicates the relationship or role of the row's contents. A "subheader" row displays the same as the table header. Rows of type "child" row are indented.
    *  @default 'data' */
   rowType?: RowType;
   /** Label set on the row's checkbox
