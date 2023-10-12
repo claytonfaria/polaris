@@ -5054,7 +5054,7 @@ export function WithNestedRowsWithThumbnailsOneCellSelectable() {
   ];
 
   const columnHeadings = [
-    {title: 'size', id: 'column-header--size'},
+    {title: 'Name', id: 'column-header--size'},
     {
       hidden: false,
       id: 'column-header--price',
@@ -5266,7 +5266,7 @@ export function WithNestedRowsWithThumbnailsOneCellNonSelectable() {
   ];
 
   const columnHeadings = [
-    {title: 'size', id: 'column-header--size'},
+    {title: 'Name', id: 'column-header--size'},
     {
       hidden: false,
       id: 'column-header--price',
