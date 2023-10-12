@@ -153,6 +153,7 @@ function IndexTableBase({
   onSort,
   sortToggleLabels,
   hasZebraStriping,
+  pagination,
   ...restProps
 }: IndexTableBaseProps) {
   const {
@@ -218,7 +219,7 @@ function IndexTableBase({
     selectAllActionsMaxWidth,
     selectAllActionsOffsetLeft,
     computeTableDimensions,
-  } = useIsSelectAllActionsSticky(selectMode);
+  } = useIsSelectAllActionsSticky(selectMode, Boolean(pagination));
 
   useEffect(() => {
     computeTableDimensions();
@@ -797,8 +798,13 @@ function IndexTableBase({
     styles.IndexTableWrapper,
     Boolean(selectAllActionsMarkup) &&
       selectMode &&
+      !pagination &&
       styles.IndexTableWrapperWithSelectAllActions,
   );
+
+  const paginationMarkup = pagination ? (
+    <Pagination type="table" {...pagination} />
+  ) : null;
 
   return (
     <>
@@ -806,6 +812,7 @@ function IndexTableBase({
         <div className={tableWrapperClassNames} ref={tableMeasurerRef}>
           {!shouldShowBulkActions && !condensed && loadingMarkup}
           {tableContentMarkup}
+          {paginationMarkup}
         </div>
         <div ref={selectAllActionsIntersectionRef} />
       </div>
@@ -1191,9 +1198,11 @@ export function IndexTable({
         condensed={condensed}
         onSelectionChange={onSelectionChange}
       >
-        <IndexTableBase {...indexTableBaseProps}>{children}</IndexTableBase>
+        <IndexTableBase {...indexTableBaseProps} pagination={pagination}>
+          {children}
+        </IndexTableBase>
       </IndexProvider>
-      {paginationMarkup}
+      {/* {paginationMarkup} */}
     </>
   );
 }
