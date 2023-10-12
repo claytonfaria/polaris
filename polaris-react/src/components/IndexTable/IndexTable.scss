@@ -235,12 +235,11 @@ $loading-panel-height: 53px;
         left: calc(var(--pc-index-table-checkbox-child-offset));
       }
     }
-    .TableCell-first + .TableCell > span {
-      position: relative;
-      left: var(--pc-index-table-checkbox-child-offset);
+
+    .TableCell-first + .TableCell {
+      padding-left: var(--pc-index-table-checkbox-child-offset);
       @media #{$p-breakpoints-sm-down} {
-        position: relative;
-        left: var(--pc-index-table-checkbox-child-offset);
+        padding-left: var(--pc-index-table-checkbox-child-offset);
       }
     }
   }

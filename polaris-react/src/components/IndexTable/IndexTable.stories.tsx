@@ -4009,15 +4009,15 @@ export function WithNestedRows() {
       id: '3411',
       quantity: 11,
       price: '$2,400',
-      size: 'Small',
-      color: 'Orange',
+      size: 'Small Small Small',
+      color: 'Orange Orange Orange',
     },
     {
       id: '2562',
       quantity: 30,
       price: '$975',
-      size: 'Medium',
-      color: 'Orange',
+      size: 'Medium Medium Medium',
+      color: 'Orange Orange Orange',
     },
     {
       id: '4102',
@@ -5176,7 +5176,7 @@ export function WithNestedRowsWithThumbnailsOneCellSelectable() {
                   scope="row"
                   headers={`${columnHeadings[0].id} ${subheaderId}`}
                 >
-                  <Box paddingInlineStart="800">
+                  <Box paddingInlineStart="150">
                     <InlineStack gap="400" blockAlign="center">
                       <Thumbnail
                         source="https://burst.shopifycdn.com/photos/black-leather-choker-necklace_373x@2x.jpg"
