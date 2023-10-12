@@ -4592,8 +4592,8 @@ export function WithNestedRowsWithThumbnails() {
       id: '3411',
       quantity: 11,
       price: '$2,400',
-      size: 'Small',
-      color: 'Orange',
+      size: 'Small Small Small',
+      color: 'Orange Orange Orange',
     },
     {
       id: '2562',
