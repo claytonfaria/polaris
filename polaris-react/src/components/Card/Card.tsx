@@ -56,8 +56,8 @@ export const Card = ({
         <Box
           background={background}
           padding={padding}
-          overflowX="hidden"
-          overflowY="hidden"
+          overflowX="clip"
+          overflowY="clip"
           minHeight="100%"
         >
           {children}
